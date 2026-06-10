@@ -1,0 +1,469 @@
+--Tables Creation
+
+create table mem (
+member_id varchar2(20) primary key,
+fname varchar2(50) not null,
+sname varchar2(50) not null,
+lname varchar2(50) not null,
+bDate date,
+jDate date not null,
+sex varchar2(7) not null,
+membership_type varchar2(100),
+check (sex in('m','f','male','female' ))
+);
+
+
+
+create table trainer(
+trainer_id varchar2(20) primary key,
+tfname varchar2(50) not null,
+tsname varchar2(50) not null,
+lname varchar2(50) not null,
+salary number(4) not null,
+specialty varchar2(100),
+check(salary between 1000 AND 8000)
+);
+
+
+
+create table workout_plan(
+plan_id varchar2(20) primary key,
+plan_name varchar2(50) not null,
+plan_description varchar2(200),
+plan_duration varchar2(50),
+trainer_id varchar2(20) not null,
+foreign key (trainer_id) references trainer(trainer_id) on delete cascade
+);
+
+
+
+create table subsc(
+subsc_id varchar2(20) primary key,
+payment_status varchar(10) not null,
+start_date date not null,
+member_id varchar2(20) not null,
+check (payment_status in('paid' ,'unpaid' ,'pending')),
+foreign key (member_id) references mem(member_id) on delete cascade
+);
+
+
+
+create table item(
+item_id varchar2(20) primary key,
+item_name varchar2(50) not null,
+price number(6,2) not null,
+cat varchar2(30) default null,
+check(price between 10 AND 4999.99),
+check (cat in ('Protein' ,'Food' ,'Drinks' ,'Snacks'))
+);
+
+
+
+create table sale(
+sale_id varchar2(20) primary key,
+sale_datetime date not null,
+quantity number (8) not null,
+member_id varchar2(20) not null,
+item_id varchar2(20) not null,
+total_price number(10,2),
+check(quantity between 1 AND 100),
+foreign key (member_id) references mem(member_id) on delete cascade,
+foreign key (item_id) references item(item_id) on delete cascade);
+
+
+
+create table trainer_member(
+-- represents the relation between tranier and member tables ,which is it a M-N Relation
+trainer_id varchar2(20),
+member_id varchar2(20),
+primary key (trainer_id, member_id),
+foreign key (trainer_id) references trainer(trainer_id) on delete cascade,
+foreign key (member_id) references mem(member_id) on delete cascade);
+
+
+
+create table workout_member(
+-- represents the relation between WorkoutPlan and member tables ,which is it a M-N Relation
+plan_id varchar2(20),
+member_id varchar2(20),
+primary key (plan_id,member_id),
+foreign key (plan_id) references workout_plan(plan_id) on delete cascade,
+foreign key (member_id) references mem(member_id) on delete cascade
+);
+
+
+
+
+create table trainer_phone (
+--multivalued attribute (trainer phone number), a trainer may have more than one phone number
+tphone varchar2(15),
+trainer_id varchar2(20),
+primary key(tphone,trainer_id),
+foreign key (trainer_id) references trainer(trainer_id) on delete cascade);
+
+
+
+
+create table member_phone(
+--multivalued attribute (member phone number), a member may have more than one phone number
+mphone varchar2(15),
+member_id varchar2(20),
+primary key(mphone,member_id),
+foreign key (member_id) references mem(member_id) on delete cascade);
+
+
+
+
+-- ======================================================================= --
+
+
+
+
+
+--Data Insertion
+
+--insert data into mem table, aka. member
+
+insert into mem
+values('prm2005', 'Samer', 'Jamal', 'Awayssa',
+TO_DATE('09-12-2005'),
+TO_DATE('11-12-2025'),
+'m', 'Premium' );
+
+
+
+insert into mem
+values('prm465', 'Ibraheem', 'Khalil', 'AbelHaq',
+TO_DATE('09-12-2005'),
+TO_DATE('01-10-2022'),
+'m', 'Premium' );
+
+
+
+insert into mem
+values ('bsc33' , 'Noor' ,'Amroo' ,'Salah',
+to_date('08-02-2001'),
+sysdate, 'f' ,'Basic');
+
+
+
+insert into mem
+values ('gld124' , 'Ali', 'Ahmad', 'Saleh',
+to_date('12-04-2004'),
+sysdate, 'm' ,'Gold');
+
+
+
+insert into mem
+values('slv1002', 'Nabil', 'Yousef', 'Khalil',
+to_date('22-06-2000'),
+sysdate, 'm', 'Silver');
+
+
+
+insert into mem values('plt1002', 'Tamer', 'Fadi', 'Rashid',
+to_date('02-12-1993'),
+sysdate, 'm', 'Platinum');
+
+
+
+
+
+
+
+
+
+
+
+--insert data into member_phone table, each member have 2 phone numbers
+
+
+
+
+insert into member_phone values('+970599567272', 'prm2005');
+insert into member_phone values('+972599567272', 'prm2005');
+
+insert into member_phone values('+970597597966', 'prm465');
+insert into member_phone values('+972597597966', 'prm465');
+
+
+insert into member_phone values('+970598566772', 'bsc33');
+insert into member_phone values('+972598566772', 'bsc33');
+
+
+insert into member_phone values('+970597456211', 'gld124');
+insert into member_phone values('+972597456211', 'gld124');
+
+
+insert into member_phone values('+970596453290', 'slv1002');
+insert into member_phone values('+972596453290', 'slv1002');
+
+
+insert into member_phone values('+970599336081', 'plt1002');
+insert into member_phone values('+972599336081', 'plt1002');
+
+
+
+
+
+
+
+--insert data into trainer table
+
+
+insert into trainer
+values('trn5411' ,'Ammar' ,'Ahmad', 'Salahat' ,8000 ,'Weight Loss');
+
+
+insert into trainer
+values('trn1102' ,'Mohamed' ,'Hasan', 'Showpakee' ,4200 ,'Cardio');
+
+
+insert into trainer 
+values('trn2216', 'Omar', 'Fadi', 'Rashid', 6000, 'Strength Training');
+
+
+
+
+
+---insert data into trainer_phone table
+
+
+insert into trainer_phone values('+970599111001', 'trn5411');
+insert into trainer_phone values('+972599111001', 'trn5411');
+
+insert into trainer_phone values('+970599222002', 'trn1102');
+insert into trainer_phone values('+972599222002', 'trn1102');
+
+insert into trainer_phone values('+970599333003', 'trn2216');
+insert into trainer_phone values('+972599333003', 'trn2216');
+
+
+
+
+--insert data into trainer_member table
+
+
+insert into trainer_member values('trn5411', 'prm2005');
+
+insert into trainer_member values('trn2216', 'prm2005');
+
+insert into trainer_member values('trn1102', 'prm465');
+
+insert into trainer_member values('trn5411', 'bsc33');
+
+insert into trainer_member values('trn2216', 'gld124');
+
+insert into trainer_member values('trn1102', 'slv1002');
+
+insert into trainer_member values('trn2216', 'slv1002');
+
+insert into trainer_member values('trn5411', 'plt1002');
+
+
+
+
+
+--insert data int subsc table ,aka. subscription table
+
+
+insert into subsc(subsc_id, payment_status, start_date, member_id)
+values('sub001', 'paid', to_date('01-01-2025'), 'prm2005');
+
+insert into subsc(subsc_id, payment_status, start_date, member_id)
+values('sub002', 'pending', to_date('15-09-2025'), 'prm465');
+
+insert into subsc(subsc_id, payment_status, start_date, member_id)
+values('sub003', 'paid', to_date('01-06-2025'), 'bsc33');
+
+insert into subsc(subsc_id, payment_status, start_date, member_id)
+values('sub004', 'unpaid', to_date('01-03-2025'), 'gld124');
+
+insert into subsc(subsc_id, payment_status, start_date, member_id)
+values('sub005', 'paid', to_date('10-07-2025'), 'slv1002');
+
+insert into subsc(subsc_id, payment_status, start_date, member_id)
+values('sub006', 'paid', to_date('05-02-2025'), 'plt1002');
+
+
+
+
+
+
+--insert data into workout_plan table
+
+
+insert into workout_plan
+values('WP001', 'Cardio Blast', 'High intensity cardio workout', '4 weeks', 'trn5411');
+
+insert into workout_plan
+values('WP002', 'Fat Burn Express', 'Quick fat-burning routines', '3 weeks', 'trn5411');
+
+insert into workout_plan
+values('WP003', 'Strength Builder', 'Focus on muscle strength and tone', '6 weeks', 'trn1102');
+
+insert into workout_plan
+values('WP005', 'CrossFit Power', 'CrossFit training for all levels', '5 weeks', 'trn2216');
+
+
+
+
+
+
+--insert data into workout_member table
+
+
+insert into workout_member values('WP003', 'prm465');
+
+insert into workout_member values('WP001', 'bsc33');
+
+insert into workout_member values('WP002', 'bsc33');
+
+insert into workout_member values('WP005', 'gld124');
+
+insert into workout_member values('WP003', 'slv1002');
+
+insert into workout_member values('WP005', 'slv1002');
+
+insert into workout_member values('WP001', 'plt1002');
+
+insert into workout_member values('WP002', 'plt1002');
+
+
+
+
+
+--insert data into item table
+
+
+insert into item values('I001', 'Protein Shake', 35.50, 'Protein');
+
+insert into item values('I002', 'Whey Protein', 120.00, 'Protein');
+
+insert into item values('I003', 'Creatine Powder', 55.75, 'Protein');
+
+insert into item values('I004', 'Protein Bar', 18.99, 'Food');
+
+insert into item values('I005', 'Chicken Sandwich', 22.50, 'Food');
+
+insert into item values('I006', 'Energy Drink', 12.00, 'Drinks');
+
+insert into item values('I007', 'Orange Juice', 10.50, 'Drinks');
+
+insert into item values('I008', 'Nuts Mix', 12.00, 'Snacks');
+
+insert into item values('I009', 'Granola Bar', 10.00, 'Snacks');
+
+insert into item values('I010', 'Tuna Salad', 26.00, 'Food');
+
+
+
+
+
+--insert data into sale table
+
+insert into sale
+values('S001' , SYSDATE, 2, 'prm2005', 'I004',
+2* (select price from item where item_id='I004'));
+
+insert into sale
+values('S002', SYSDATE, 4, 'bsc33', 'I001', 
+4 * (select price from item where item_id='I001') );
+
+insert into sale
+values('S003', SYSDATE, 4, 'bsc33', 'I003',
+4 * (select price from item where item_id='I003') );
+
+insert into sale
+values('S004', SYSDATE, 1, 'plt1002', 'I003', 
+1 * (select price from item where item_id='I003') );
+
+insert into sale
+values('S005', SYSDATE, 3, 'prm2005', 'I010',
+3* (select price from item where item_id='I010') );
+
+
+
+
+--Generate some reports
+
+
+select * from mem;
+
+
+
+
+select m.member_id, m.fname, m.lname, mp.mphone
+from mem m
+join member_phone mp on m.member_id= mp.member_id
+order by m.member_id;
+
+
+
+
+
+select t.trainer_id ,t.tfname, t.lname, tp.tphone
+from trainer t
+join trainer_phone tp on t.trainer_id=tp.trainer_id
+order by t.trainer_id;
+
+
+
+
+
+select wp.plan_id, wp.plan_name, wp.plan_description, wp.plan_duration,
+t.tfname, t.lname
+from workout_plan wp
+join trainer t on wp.trainer_id = t.trainer_id;
+
+
+
+
+
+select s.sale_id, s.sale_datetime, s.quantity, s.total_price,
+m.fname, m.lname, i.item_name, i.price
+from sale s
+join mem m on s.member_id= m.member_id
+join item i on s.item_id= i.item_id
+order by s.sale_datetime;
+
+
+
+
+
+select membership_type, count(*) as  total_members
+from mem
+group by membership_type;
+
+
+
+
+
+select i.item_name , sum(s.total_price) as total_sales
+from sale s
+join item i on s.item_id= i.item_id
+group by i.item_name
+order by total_sales desc;
+
+
+
+
+
+select m.fname , m.lname,
+t.tfname , t.lname 
+from trainer_member tm
+join mem m on tm.member_id= m.member_id
+join trainer t on tm.trainer_id = t.trainer_id
+order by m.fname;
+
+
+
+
+
+select m.fname, m.lname, wp.plan_name
+from workout_member wm
+join mem m on wm.member_id = m.member_id
+join workout_plan wp on wm.plan_id = wp.plan_id
+order by m.fname;
+
+
